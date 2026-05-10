@@ -115,4 +115,8 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    'contact_to' => [
+        'address' => env('MAIL_CONTACT_TO', 'admin@elditech.com'),
+    ],
+
 ];

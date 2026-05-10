@@ -333,9 +333,12 @@
                              text-white text-sm focus:outline-none focus:border-accent focus:ring-1
                              focus:ring-accent transition-colors resize-none" />
           </div>
-          <button type="submit" class="btn-primary w-full text-center">
-            {{ locale === 'id' ? 'Kirim Pesan' : 'Send Message' }}
+          <button type="submit" :disabled="contactForm.processing" class="btn-primary w-full text-center">
+            {{ contactForm.processing ? (locale === 'id' ? 'Mengirim...' : 'Sending...') : (locale === 'id' ? 'Kirim Pesan' : 'Send Message') }}
           </button>
+          <p v-if="contactForm.errors.mail" class="text-red-400 text-sm text-center font-semibold">
+            {{ contactForm.errors.mail }}
+          </p>
           <p v-if="contactSent" class="text-accent text-sm text-center font-semibold">
             {{ locale === 'id' ? '✓ Pesan terkirim! Kami akan segera menghubungi Anda.' : '✓ Message sent! We\'ll be in touch soon.' }}
           </p>
@@ -348,7 +351,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -359,12 +362,25 @@ const page = usePage();
 const locale = computed(() => page.props.locale || 'en');
 
 // ── Contact form ──────────────────────────────────
-const contactForm = ref({ name: '', email: '', message: '' });
+const contactForm = useForm({
+  name: '',
+  email: '',
+  subject: 'Homepage CTA',
+  message: '',
+  source: 'home',
+});
 const contactSent = ref(false);
 function submitContact() {
-  contactSent.value = true;
-  contactForm.value = { name: '', email: '', message: '' };
-  setTimeout(() => { contactSent.value = false; }, 5000);
+  contactForm.post(route('contact.submit', { locale: locale.value }), {
+    preserveScroll: true,
+    onSuccess: () => {
+      contactSent.value = true;
+      contactForm.reset('name', 'email', 'message');
+      setTimeout(() => {
+        contactSent.value = false;
+      }, 5000);
+    },
+  });
 }
 
 // ── Stats ─────────────────────────────────────────

@@ -40,6 +40,15 @@
           Posts / Projects
         </Link>
 
+        <Link :href="route('contact-submissions.index')"
+              :class="['admin-sidebar-link', isRoute('contact-submissions.index') && 'active']">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 8h10M7 12h6m-6 4h10M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" />
+          </svg>
+          Contact Submissions
+        </Link>
+
         <p class="text-[10px] font-semibold text-gray-600 uppercase tracking-widest px-4 mt-4 mb-2">
           Account
         </p>

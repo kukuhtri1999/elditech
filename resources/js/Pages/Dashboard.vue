@@ -3,7 +3,7 @@
   <AdminLayout title="Dashboard" subtitle="Welcome back, let's build something great">
 
     <!-- Stats row -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-5 mb-8">
       <div v-for="stat in dashStats" :key="stat.label" class="admin-stat-card">
         <div class="flex items-center justify-between">
           <span class="text-xs text-gray-500 uppercase tracking-widest font-semibold">{{ stat.label }}</span>
@@ -101,6 +101,17 @@
             <p class="text-xs text-gray-500">Update profile & password</p>
           </div>
         </Link>
+
+        <Link :href="route('contact-submissions.index')"
+              class="flex items-center gap-3 glass-card-hover p-4 rounded-xl group">
+          <span class="text-2xl">📥</span>
+          <div>
+            <p class="text-sm font-semibold text-white group-hover:text-accent transition-colors">
+              Contact Inbox
+            </p>
+            <p class="text-xs text-gray-500">Review incoming inquiries</p>
+          </div>
+        </Link>
       </div>
     </div>
 
@@ -117,12 +128,15 @@ const props = defineProps({
   totalPosts:  { type: Number, default: 0 },
   publishedPosts: { type: Number, default: 0 },
   draftPosts:  { type: Number, default: 0 },
+  totalContacts: { type: Number, default: 0 },
+  unreadContacts: { type: Number, default: 0 },
 });
 
 const dashStats = computed(() => [
   { label: 'Total Posts',    value: props.totalPosts,     icon: '📝', note: 'All content' },
   { label: 'Published',      value: props.publishedPosts, icon: '🟢', note: 'Live on site' },
   { label: 'Drafts',         value: props.draftPosts,     icon: '📋', note: 'Unpublished' },
+  { label: 'Inquiries',      value: props.totalContacts,  icon: '📥', note: `${props.unreadContacts} unread` },
   { label: 'App Downloads',  value: '10M+',               icon: '📱', note: 'Across all apps' },
 ]);
 </script>

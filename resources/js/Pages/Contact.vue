@@ -124,10 +124,14 @@
                             :placeholder="isId ? 'Ceritakan tentang proyek Anda...' : 'Tell us about your project...'"></textarea>
                 </div>
                 
-                <button type="submit" :disabled="sending"
+                <button type="submit" :disabled="form.processing"
                         class="btn-primary w-full py-4 text-center justify-center text-sm font-black uppercase tracking-widest">
-                  {{ sending ? (isId ? 'Mengirim...' : 'Sending...') : (isId ? 'Kirim Pesan Sekarang' : 'Send Message Now') }}
+                  {{ form.processing ? (isId ? 'Mengirim...' : 'Sending...') : (isId ? 'Kirim Pesan Sekarang' : 'Send Message Now') }}
                 </button>
+
+                <p v-if="form.errors.mail" class="text-red-400 text-center text-sm font-semibold">
+                  {{ form.errors.mail }}
+                </p>
                 
                 <p v-if="success" class="text-accent text-center text-sm font-bold animate-pulse">
                   {{ isId ? '✓ Pesan berhasil dikirim!' : '✓ Message sent successfully!' }}
@@ -165,7 +169,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -174,25 +178,28 @@ const page = usePage();
 const locale = computed(() => page.props.locale || 'en');
 const isId = computed(() => locale.value === 'id');
 
-const form = ref({
+const form = useForm({
   name: '',
   email: '',
   subject: 'General',
-  message: ''
+  message: '',
+  source: 'contact',
 });
 
-const sending = ref(false);
 const success = ref(false);
 
 function submitContact() {
-  sending.value = true;
-  // Mocking submission
-  setTimeout(() => {
-    sending.value = false;
-    success.value = true;
-    form.value = { name: '', email: '', subject: 'General', message: '' };
-    setTimeout(() => success.value = false, 5000);
-  }, 1500);
+  form.post(route('contact.submit', { locale: locale.value }), {
+    preserveScroll: true,
+    onSuccess: () => {
+      success.value = true;
+      form.reset('name', 'email', 'subject', 'message');
+      form.subject = 'General';
+      setTimeout(() => {
+        success.value = false;
+      }, 5000);
+    },
+  });
 }
 
 onMounted(() => {
